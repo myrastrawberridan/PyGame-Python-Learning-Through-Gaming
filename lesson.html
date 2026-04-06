@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🎮 Pygame — Lesson</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/dashboard.css"/>
+  <link rel="stylesheet" href="css/lesson.css"/>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="dashboard.html" class="logo">🎮 <span>Pygame</span></a>
+  <div class="nav-center">
+    <span id="lesson-nav-lbl" style="font-family:'Press Start 2P',monospace;font-size:0.45rem;color:#ff8fa3;">📚 Lesson</span>
+  </div>
+  <div class="nav-right">
+    <div class="nav-badge" id="lesson-nav-stage">🌱 Beginner</div>
+  </div>
+</nav>
+
+<!-- LESSON PAGE -->
+<div class="lesson-page">
+
+  <!-- Progress header -->
+  <div class="lp-header">
+    <button class="lp-back" onclick="window.location.href='dashboard.html'">← Back</button>
+    <div class="lp-prog">
+      <span class="lp-pct" id="lp-pct">Lesson 1 / 8</span>
+      <div class="lp-bar"><div class="lp-fill" id="lp-fill" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <!-- Topic banner -->
+  <div id="lp-topic-banner" style="display:flex;align-items:center;justify-content:center;gap:0.5rem;padding:0.6rem 1rem;margin:0 auto 0.5rem;background:rgba(232,41,74,0.08);border:1px solid rgba(232,41,74,0.2);border-radius:12px;max-width:600px;">
+    <span id="lp-topic-icon" style="font-size:1.4rem;">🖨️</span>
+    <span id="lp-topic-name" style="font-family:'Press Start 2P',monospace;font-size:0.42rem;color:#ff8fa3;letter-spacing:0.05em;">Topic: print()</span>
+  </div>
+
+  <!-- Question card -->
+  <div class="lp-card" id="lp-card">
+    <span class="lp-qnum" id="lp-qnum">Question 1 of 3</span>
+    <div class="lp-diff easy" id="lp-diff">🌱 Easy</div>
+    <p class="lp-qtxt" id="lp-qtxt">Loading...</p>
+    <pre class="lp-context" id="lp-context"></pre>
+    <div id="lp-editor-mount"></div>
+    <div class="fb-panel" id="lp-fb" style="display:none"></div>
+    <button class="lp-next" id="lp-next" style="display:none" onclick="nextLessonQ()">NEXT ▶</button>
+  </div>
+
+</div>
+
+<footer>Made with 🎮 by <b>Nur Myra Qistina</b> · Python Learning Through Gaming · UPTM 2026</footer>
+
+<script src="js/questions.js"></script>
+<script>
+
+// ── Config ────────────────────────────────────────────────────
+var STAGES = [
+  { name:'🌱 Beginner Stage',     short:'Beginner',     bank:'beginner',     totalLessons:8 },
+  { name:'⚡ Intermediate Stage', short:'Intermediate', bank:'intermediate', totalLessons:3 },
+  { name:'👑 Master Stage',       short:'Master',       bank:'master',       totalLessons:8 }
+];
+
+var TOPICS = {
+  beginner: {
+    1: { icon:'🖨️', name:'print()' },
+    2: { icon:'📦', name:'Variables' },
+    3: { icon:'⌨️', name:'input()' },
+    4: { icon:'🔀', name:'if / else' },
+    5: { icon:'🔁', name:'for loop' },
+    6: { icon:'🔄', name:'while loop' },
+    7: { icon:'🔧', name:'Functions' },
+    8: { icon:'📋', name:'Lists' }
+  },
+  intermediate: {
+    1: { icon:'⚡', name:'List Comprehension' },
+    2: { icon:'📖', name:'Dictionaries' },
+    3: { icon:'↩️', name:'Functions with Return' }
+  }
+};
+
+// ── Storage ───────────────────────────────────────────────────
+function getSess()    { var r = localStorage.getItem('pyb_sess'); return r ? JSON.parse(r) : null; }
+function getUsers()   { return JSON.parse(localStorage.getItem('pyb_users') || '[]'); }
+function saveUsers(u) { localStorage.setItem('pyb_users', JSON.stringify(u)); }
+function saveSess(u)  { localStorage.setItem('pyb_sess', JSON.stringify(u)); }
+
+// ── Game state ────────────────────────────────────────────────
+var D = {
+  currentStage:0, currentLesson:1, xp:0, streak:1,
+  lessonsCompleted:0, bossesBeaten:0, bestBossScore:null, bossRetries:0,
+  badges:[], stagesCleared:[], lessonProgress:[0,0,0],
+  bossUnlocked:[false,false,false]
+};
+
+var PB_URL = 'http://127.0.0.1:8090';
+
+function saveDash() {
+  var s = getSess(); if (!s) return;
+
+  // Save to localStorage
+  s.gd = Object.assign({}, s.gd || {}, D);
+  localStorage.setItem('pyb_sess', JSON.stringify(s));
+
+  // Save to PocketBase
+  fetch(PB_URL + '/api/collections/users/records/' + s.id, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + (s.token || '')
+    },
+    body: JSON.stringify({ gamedata: D })
+  }).catch(function(err) {
+    console.warn('PocketBase save failed:', err);
+  });
+}
+
+// ── Stars ─────────────────────────────────────────────────────
+(function() {
+  var el = document.getElementById('stars'); if (!el) return;
+  for (var i = 0; i < 80; i++) {
+    var s = document.createElement('div'); s.className = 'star';
+    var z = Math.random() * 2 + 0.5;
+    s.style.cssText = 'width:'+z+'px;height:'+z+'px;top:'+Math.random()*100+'%;left:'+Math.random()*100+'%';
+    s.style.setProperty('--dur', (Math.random()*3+2)+'s');
+    s.style.animationDelay = Math.random()*5+'s';
+    el.appendChild(s);
+  }
+})();
+
+// ── Lesson state ──────────────────────────────────────────────
+var LS = { stageIdx:0, lessonNum:1, questions:[], qi:0, score:0, answered:false };
+
+// ── Start lesson ──────────────────────────────────────────────
+function startLesson(stageIdx, lessonNum) {
+  var st           = STAGES[stageIdx] || STAGES[0];
+  var totalLessons = st.totalLessons;
+  var safeStage    = Math.max(0, Math.min(2, isNaN(stageIdx)  ? 0 : stageIdx));
+  var safeLesson   = Math.max(1, Math.min(totalLessons, isNaN(lessonNum) ? 1 : lessonNum));
+
+  LS = {
+    stageIdx:  safeStage,
+    lessonNum: safeLesson,
+    questions: getLessonQuestions(st.bank, safeLesson),
+    qi: 0, score: 0, answered: false
+  };
+
+  // Nav
+  document.getElementById('lesson-nav-lbl').textContent   = '📚 ' + st.short + ' — Lesson ' + safeLesson;
+  document.getElementById('lesson-nav-stage').textContent = st.name;
+
+  // Topic banner
+  var topic = (TOPICS[st.bank] || {})[safeLesson] || { icon:'📚', name:'Lesson ' + safeLesson };
+  document.getElementById('lp-topic-icon').textContent = topic.icon;
+  document.getElementById('lp-topic-name').textContent = 'Topic: ' + topic.name;
+
+  renderLessonQ();
+}
+
+// ── Render question ───────────────────────────────────────────
+function renderLessonQ() {
+  LS.answered = false;
+
+  var q = LS.questions[LS.qi];
+  if (!q) { finishLesson(); return; }
+
+  var st           = STAGES[LS.stageIdx];
+  var totalLessons = st.totalLessons;
+  var pct          = Math.round((LS.lessonNum / totalLessons) * 100);
+
+  document.getElementById('lp-pct').textContent  = 'Lesson ' + LS.lessonNum + ' / ' + totalLessons;
+  document.getElementById('lp-fill').style.width = pct + '%';
+  document.getElementById('lp-qnum').textContent = 'Question ' + (LS.qi + 1) + ' of ' + LS.questions.length;
+
+  // Difficulty
+  var diffs = ['easy', 'med',    'hard'];
+  var dlbls = ['🌱 Easy', '⚡ Medium', '🔥 Hard'];
+  var dEl   = document.getElementById('lp-diff');
+  dEl.textContent = dlbls[LS.qi] || '🌱 Easy';
+  dEl.className   = 'lp-diff ' + (diffs[LS.qi] || 'easy');
+
+  // Question text
+  document.getElementById('lp-qtxt').textContent = q.q;
+
+  // Context
+  var ctx = document.getElementById('lp-context');
+  if (q.ctx) { ctx.textContent = q.ctx; ctx.style.display = 'block'; }
+  else        { ctx.textContent = '';    ctx.style.display = 'none';  }
+
+  // Editor
+  makeEditor('lp-editor-mount', q.placeholder || '# type your answer here', 'submitLessonA');
+
+  // Reset feedback + next btn
+  var fb = document.getElementById('lp-fb');
+  fb.style.display = 'none'; fb.className = 'fb-panel'; fb.innerHTML = '';
+  document.getElementById('lp-next').style.display = 'none';
+}
+
+// ── Submit answer ─────────────────────────────────────────────
+function submitLessonA() {
+  if (LS.answered) return;
+
+  var val = getEditorValue('lp-editor-mount');
+  if (!val.trim()) {
+    setEditorState('lp-editor-mount', 'wrong');
+    setTimeout(function(){ setEditorState('lp-editor-mount', ''); }, 600);
+    return;
+  }
+
+  LS.answered = true;
+  var q       = LS.questions[LS.qi];
+  var correct = checkAnswer(val, q);
+
+  if (correct) { LS.score++; setEditorState('lp-editor-mount', 'correct'); }
+  else         {             setEditorState('lp-editor-mount', 'wrong');   }
+
+  setEditorDisabled('lp-editor-mount', true);
+  renderFeedback('lp-fb', correct, q, val);
+
+  var nx = document.getElementById('lp-next');
+  nx.style.display = 'block';
+  nx.textContent   = LS.qi === LS.questions.length - 1 ? '✓ FINISH LESSON' : 'NEXT ▶';
+}
+
+// ── Next question ─────────────────────────────────────────────
+function nextLessonQ() {
+  LS.qi++;
+  if (LS.qi < LS.questions.length) { renderLessonQ(); }
+  else                              { finishLesson();  }
+}
+
+// ── Badge definitions ─────────────────────────────────────────
+var BADGE_DEFS = [
+  { id:0, icon:'🌱', name:'Seedling Coder',   desc:'You planted your first seed of Python knowledge!' },
+  { id:1, icon:'🍓', name:'Berry in Progress', desc:'Halfway through! Youre ripening nicely!' },
+  { id:2, icon:'👑', name:'Boss Berry',        desc:'You crushed the Mushroom King like a ripe strawberry!' },
+  { id:3, icon:'💀', name:'Brave Berry',       desc:'You faced the boss and lived to code another day!' }
+];
+
+// ── Award badge ───────────────────────────────────────────────
+function awardBadge(badgeId) {
+  if (D.badges.indexOf(badgeId) > -1) return;
+  D.badges.push(badgeId);
+  sessionStorage.setItem('newBadge', badgeId); // tell dashboard to show popup
+}
+
+// ── Finish lesson ─────────────────────────────────────────────
+function finishLesson() {
+  var st           = STAGES[LS.stageIdx];
+  var totalLessons = st.totalLessons;
+
+  D.lessonsCompleted++;
+  D.xp = Math.min(D.xp + 15, 300);
+  D.lessonProgress[LS.stageIdx] = Math.min(Math.round((LS.lessonNum / totalLessons) * 100), 100);
+
+  if (LS.stageIdx === D.currentStage && LS.lessonNum === D.currentLesson) {
+    if (D.currentLesson < totalLessons) {
+      D.currentLesson++;
+    } else {
+      D.bossUnlocked[D.currentStage]   = true;
+      D.lessonProgress[D.currentStage] = 100;
+    }
+  }
+
+  // Check badge awards
+  if (LS.lessonNum === 1) awardBadge(0);  // finished lesson 1
+  if (LS.lessonNum === 4) awardBadge(1);  // finished lesson 4 (middle)
+
+  saveDash();
+  sessionStorage.setItem('fromLesson', 'true');
+  window.location.href = 'dashboard.html';
+}
+
+// ── Init ──────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', function() {
+  var s = getSess();
+  if (!s) { window.location.href = 'login.html'; return; }
+
+  // Load game data from session (synced from PocketBase on login)
+  if (s.gd && Object.keys(s.gd).length > 0) {
+    D = Object.assign({}, D, s.gd);
+  }
+
+  var stage  = parseInt(sessionStorage.getItem('lessonStage'));
+  var lesson = parseInt(sessionStorage.getItem('lessonNumber'));
+  startLesson(isNaN(stage) ? 0 : stage, isNaN(lesson) ? 1 : lesson);
+});
+
+</script>
+</body>
+</html>
