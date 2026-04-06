@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🍓 PyGame Gaming — Review</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/review.css"/>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+<div id="pix"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="logo" onclick="window.location.href='dashboard.html'">🍓 <b>PyGame</b> Gaming</div>
+  <div class="navlinks">
+    <div class="nl" onclick="window.location.href='dashboard.html'">🗺️ Dashboard</div>
+    <div class="nl on">🔍 Review</div>
+  </div>
+  <div class="nbadge" id="rev-stage-lbl">📚 Review</div>
+</nav>
+
+<!-- REVIEW CONTENT -->
+<div class="review-page">
+
+  <div class="review-header">
+    <h2>📚 Review Your Mistakes</h2>
+    <p>Study these before retrying! You need
+      <b style="color:var(--yw)">80% (16/20)</b>
+      to defeat the boss. You can do it! 🍓
+    </p>
+  </div>
+
+  <!-- Review items injected here by review.js -->
+  <div class="review-list" id="rev-list"></div>
+
+  <button class="btn btn-r" onclick="retryBoss()" style="margin-top:.5rem">
+    🔥 RETRY BOSS FIGHT
+  </button>
+
+</div>
+
+<footer>Made with 🍓 by <b>Nur Myra Qistina</b> · Python Learning Through Gaming · UPTM 2026</footer>
+
+<!-- JS — order matters! -->
+<script src="js/main.js"></script>
+<script src="js/questions.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/boss.js"></script>
+<script src="js/review.js"></script>
+<script>
+  // Show review on page load using saved boss state
+  (function () {
+    const s = getSess();
+    if (!s) { window.location.href = 'login.html'; return; }
+    loadDash(s);
+
+    // BS (boss state) must be in sessionStorage or memory
+    const saved = sessionStorage.getItem('bossWrongQs');
+    if (saved) {
+      BS.wrongQs   = JSON.parse(saved);
+      BS.stageIdx  = parseInt(sessionStorage.getItem('bossStage') ?? 0);
+    }
+    showReview();
+  })();
+</script>
+
+</body>
+</html>
