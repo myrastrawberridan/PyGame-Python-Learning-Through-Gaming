@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🎮 Pygame — Boss Fight</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/dashboard.css"/>
+  <link rel="stylesheet" href="css/boss.css"/>
+  <style>
+    /* ── CSS MUSHROOM BOSS ── */
+    .css-mushroom {
+      position: relative;
+      display: flex; flex-direction: column; align-items: center;
+      animation: bossHaunt 3s ease-in-out infinite;
+      filter: drop-shadow(0 0 20px rgba(180,0,20,0.6)) drop-shadow(0 20px 30px rgba(0,0,0,0.7));
+      transform-origin: center bottom;
+    }
+    @keyframes bossHaunt {
+      0%,100%{ transform: translateY(0) rotate(-1deg); }
+      50%     { transform: translateY(-10px) rotate(1deg); }
+    }
+    .mush-cap {
+      position: relative; width: 120px; height: 70px;
+      background: radial-gradient(ellipse at 38% 32%, #cc1a1a, #6b0000);
+      border-radius: 60px 60px 18px 18px;
+      border: 3px solid #3a0000;
+      box-shadow: inset 0 -10px 20px rgba(0,0,0,0.5),
+                  inset 6px 6px 14px rgba(255,80,80,0.12),
+                  0 0 28px rgba(200,0,0,0.45);
+      z-index: 3;
+    }
+    .mush-spot {
+      position: absolute;
+      background: radial-gradient(circle at 35% 30%, #f0e0d0, #c0a090);
+      border-radius: 50%;
+      box-shadow: inset -1px -1px 3px rgba(0,0,0,0.3);
+    }
+    .mush-spot.s1{ width:22px;height:18px;top:9px; left:14px; transform:rotate(-10deg); }
+    .mush-spot.s2{ width:16px;height:13px;top:6px; right:18px;transform:rotate(8deg); }
+    .mush-spot.s3{ width:11px;height:9px; top:22px;left:48px; }
+    .mush-spot.s4{ width:8px; height:7px; top:32px;right:14px; }
+    .mush-spot.s5{ width:6px; height:5px; top:40px;left:18px; }
+    /* Cap eyes glow */
+    .mush-cap-eyes {
+      position: absolute; bottom:9px; left:50%; transform:translateX(-50%);
+      display: flex; gap:22px;
+    }
+    .mush-cap-eye {
+      width:18px;height:18px;
+      background:radial-gradient(circle at 38%32%,#ff8800,#dd2200,#550000);
+      border-radius:50%; border:2px solid #100000;
+      box-shadow:0 0 10px rgba(255,80,0,0.9),0 0 20px rgba(255,80,0,0.4);
+      animation:capEye 1.8s ease-in-out infinite alternate;
+      position:relative;
+    }
+    .mush-cap-eye::before {
+      content:''; position:absolute; top:50%;left:50%;
+      transform:translate(-50%,-50%);
+      width:3px;height:12px;background:#000;border-radius:2px;
+    }
+    @keyframes capEye {
+      from{box-shadow:0 0 8px rgba(255,80,0,0.7),0 0 16px rgba(255,80,0,0.3)}
+      to{box-shadow:0 0 18px rgba(255,80,0,1),0 0 36px rgba(255,80,0,0.6)}
+    }
+    /* Brim */
+    .mush-brim {
+      width:142px;height:16px;
+      background:linear-gradient(to bottom,#7a0000,#4a0000);
+      border-radius:0 0 50% 50%/0 0 100% 100%;
+      border:2px solid #200000; margin-top:-3px;z-index:2;
+      box-shadow:0 6px 14px rgba(0,0,0,0.55);
+      position:relative;
+    }
+    .mush-brim::after {
+      content:''; position:absolute; bottom:-13px;left:6px;right:6px;height:15px;
+      background:#4a0000;
+      clip-path:polygon(
+        0% 0%,5% 0%,8% 100%,11% 0%,16% 0%,20% 100%,23% 0%,
+        28% 0%,32% 100%,35% 0%,40% 0%,44% 100%,47% 0%,
+        52% 0%,56% 100%,59% 0%,64% 0%,68% 100%,71% 0%,
+        76% 0%,80% 100%,83% 0%,88% 0%,92% 100%,95% 0%,
+        100% 0%,100% 100%,0% 100%
+      );
+    }
+    /* Arms */
+    .mush-arms {
+      display:flex;justify-content:space-between;
+      width:168px;margin-top:-16px;z-index:2;position:relative;
+    }
+    .mush-arm {
+      width:20px;height:46px;
+      background:linear-gradient(160deg,#c0956a,#7a5020,#4a2800);
+      border:2px solid #3a1800;border-radius:10px;position:relative;
+    }
+    .mush-arm.left { transform:rotate(32deg);transform-origin:top right;
+      animation:armL 3s ease-in-out infinite; }
+    .mush-arm.right{ transform:rotate(-32deg);transform-origin:top left;
+      animation:armR 3s ease-in-out infinite; }
+    @keyframes armL{0%,100%{transform:rotate(32deg)}50%{transform:rotate(40deg)}}
+    @keyframes armR{0%,100%{transform:rotate(-32deg)}50%{transform:rotate(-40deg)}}
+    .mush-claw{position:absolute;bottom:-14px;left:-2px;display:flex;gap:2px;}
+    .mush-finger{
+      width:6px;height:15px;
+      background:linear-gradient(to bottom,#b08050,#3a1800);
+      border-radius:3px 3px 6px 6px;border:1.5px solid #2a1000;
+    }
+    .mush-finger:nth-child(1){transform:rotate(-18deg);height:12px}
+    .mush-finger:nth-child(2){height:17px}
+    .mush-finger:nth-child(3){transform:rotate(18deg);height:12px}
+    /* Face */
+    .mush-face {
+      width:80px;height:72px;
+      background:radial-gradient(ellipse at 38%28%,#d4a870,#b07840,#7a4a14);
+      border-radius:8px 8px 18px 18px;
+      border:2px solid #3a2000; position:relative;z-index:4;margin-top:-4px;
+      box-shadow:inset 0 -12px 20px rgba(0,0,0,0.4),0 4px 12px rgba(0,0,0,0.5);
+      display:flex;flex-direction:column;align-items:center;padding-top:10px;gap:5px;
+    }
+    /* Scar */
+    .mush-scar{
+      position:absolute;top:14px;left:14px;
+      width:2px;height:20px;
+      background:linear-gradient(to bottom,transparent,#8b3000,#5a1800,transparent);
+      transform:rotate(15deg);border-radius:1px;
+    }
+    .mush-scar::after{
+      content:'';position:absolute;top:8px;left:-3px;
+      width:8px;height:1.5px;background:#8b3000;transform:rotate(-40deg);
+    }
+    /* Face eyes */
+    .mush-face-eyes{display:flex;gap:16px;}
+    .mush-eye{
+      width:16px;height:18px;
+      background:radial-gradient(circle at 40%35%,#1a0800,#000);
+      border-radius:50%;border:2px solid #1a0800;
+      box-shadow:0 0 8px rgba(255,20,0,0.5),inset 0 0 6px rgba(0,0,0,0.9);
+      position:relative;
+    }
+    .mush-eye::after{
+      content:'';position:absolute;top:50%;left:50%;
+      transform:translate(-50%,-50%);
+      width:6px;height:6px;
+      background:radial-gradient(circle,#cc1100,#550000);
+      border-radius:50%;
+      animation:irisG 2s ease-in-out infinite alternate;
+    }
+    @keyframes irisG{from{box-shadow:0 0 3px rgba(200,0,0,0.5)}to{box-shadow:0 0 8px rgba(255,0,0,1)}}
+    .mush-eye::before{
+      content:'';position:absolute;top:-7px;width:22px;height:5px;
+      background:linear-gradient(to bottom,#200000,#400800);border-radius:3px;
+    }
+    .mush-eye.left::before {left:-4px;transform:rotate(22deg);transform-origin:right center}
+    .mush-eye.right::before{left:-4px;transform:rotate(-22deg);transform-origin:left center}
+    /* Mouth — angry frown, NO smile */
+    .mush-mouth{
+      width:50px;height:20px;
+      background:#040000;
+      border-radius:2px 2px 26px 26px;
+      border:2px solid #280000;
+      position:relative;overflow:hidden;margin-top:3px;
+      box-shadow:inset 0 3px 10px rgba(0,0,0,0.95);
+    }
+    .mush-mouth::before{
+      content:'';position:absolute;top:0;left:0;right:0;height:9px;
+      background:#c8b888;
+      clip-path:polygon(
+        0% 0%,0% 60%,9% 60%,13% 0%,22% 60%,26% 0%,
+        35% 60%,39% 0%,48% 60%,52% 0%,61% 60%,65% 0%,
+        74% 60%,78% 0%,87% 60%,91% 0%,100% 60%,100% 0%
+      );
+    }
+    .mush-mouth::after{
+      content:'';position:absolute;bottom:0;left:0;right:0;height:8px;
+      background:#b0a070;
+      clip-path:polygon(
+        0% 100%,0% 40%,11% 40%,15% 100%,26% 40%,30% 100%,
+        41% 40%,45% 100%,56% 40%,60% 100%,71% 40%,75% 100%,
+        86% 40%,90% 100%,100% 40%,100% 100%
+      );
+    }
+    /* Drool */
+    .mush-drool{
+      width:4px;
+      background:linear-gradient(to bottom,rgba(180,160,100,0.8),rgba(100,80,40,0.1));
+      border-radius:0 0 3px 3px;
+      animation:drip 3s ease-in-out infinite;
+      margin:0 auto;
+    }
+    @keyframes drip{0%,55%{height:3px;opacity:1}80%{height:14px;opacity:1}100%{height:3px;opacity:0}}
+    /* Stem */
+    .mush-stem{
+      width:54px;height:40px;
+      background:linear-gradient(160deg,#c09060,#8a6030,#5a3810);
+      border:2px solid #3a2008;border-radius:5px 5px 13px 13px;
+      margin-top:-8px;z-index:1;position:relative;
+      box-shadow:inset 4px 0 10px rgba(0,0,0,0.2),0 6px 16px rgba(0,0,0,0.4);
+    }
+    /* Feet */
+    .mush-feet{display:flex;gap:8px;margin-top:-4px;}
+    .mush-foot{
+      width:28px;height:13px;
+      background:linear-gradient(to bottom,#8a6030,#5a3810);
+      border:2px solid #3a2000;border-radius:5px 5px 10px 10px;
+      box-shadow:0 4px 8px rgba(0,0,0,0.4);
+    }
+    /* Sparks */
+    .mush-spark{
+      position:absolute;border-radius:50%;pointer-events:none;
+      animation:sp var(--t) ease-out infinite var(--d);
+    }
+    @keyframes sp{0%{transform:translate(0,0) scale(1);opacity:0.9}100%{transform:translate(var(--x),var(--y)) scale(0);opacity:0}}
+
+    /* ── BOSS PAGE LAYOUT ── */
+    .boss-page {
+      position:relative;z-index:5;
+      display:flex;flex-direction:column;
+      min-height:calc(100vh - 57px);
+      padding:1rem;gap:0.9rem;
+      max-width:820px;margin:0 auto;
+    }
+
+    /* Question tracker */
+    .q-counter{
+      display:flex;align-items:center;justify-content:space-between;
+      background:rgba(232,41,74,0.07);
+      border:1px solid var(--border);border-radius:12px;padding:0.5rem 1rem;
+    }
+    .q-counter-label{font-family:'Press Start 2P',monospace;font-size:0.38rem;color:var(--muted);}
+    .q-counter-num{font-family:'Press Start 2P',monospace;font-size:0.5rem;color:var(--yellow);}
+    .q-track{display:flex;gap:3px;flex-wrap:wrap;max-width:280px;}
+    .q-dot{
+      width:12px;height:12px;border-radius:3px;
+      background:rgba(255,255,255,0.08);border:1px solid rgba(232,41,74,0.2);
+      transition:all 0.3s;
+    }
+    .q-dot.done {background:var(--green);border-color:var(--green);box-shadow:0 0 5px rgba(125,223,149,0.4);}
+    .q-dot.wrong{background:var(--red);  border-color:var(--red);  box-shadow:0 0 5px rgba(232,41,74,0.4);}
+    .q-dot.curr {background:var(--yellow);border-color:var(--yellow);box-shadow:0 0 7px rgba(255,209,102,0.5);animation:dotP 1s ease-in-out infinite;}
+    @keyframes dotP{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+
+    /* Battle arena */
+    .battle-arena{
+      display:grid;grid-template-columns:1fr auto 1fr;
+      gap:0.8rem;align-items:center;
+    }
+    .fighter{
+      background:var(--card);border:1px solid var(--border);
+      border-radius:18px;padding:1rem;
+      display:flex;flex-direction:column;gap:0.7rem;
+      position:relative;overflow:hidden;
+    }
+    .fighter.player::before{content:'';position:absolute;inset:0;border-radius:18px;
+      background:radial-gradient(ellipse at 50% 100%,rgba(125,223,149,0.05),transparent);pointer-events:none;}
+    .fighter.boss-card::before{content:'';position:absolute;inset:0;border-radius:18px;
+      background:radial-gradient(ellipse at 50% 0%,rgba(232,41,74,0.07),transparent);pointer-events:none;}
+    .fighter-top{display:flex;align-items:center;gap:0.7rem;}
+    .fighter-name{font-family:'Press Start 2P',monospace;font-size:0.4rem;color:var(--cream);line-height:1.8;}
+    .fighter-sub{font-size:0.72rem;color:var(--muted);font-weight:700;}
+    .hp-wrap{display:flex;flex-direction:column;gap:0.3rem;}
+    .hp-label{display:flex;justify-content:space-between;font-family:'Press Start 2P',monospace;font-size:0.35rem;}
+    .hp-tag{color:var(--muted);} .hp-num{color:var(--cream);}
+    .hp-bar{height:12px;border-radius:999px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.08);overflow:hidden;position:relative;}
+    .hp-fill{height:100%;border-radius:999px;transition:width 0.5s cubic-bezier(.22,1,.36,1);}
+    .hp-fill::after{content:'';position:absolute;top:2px;left:4px;right:4px;height:3px;background:rgba(255,255,255,0.2);border-radius:999px;}
+    .player .hp-fill{background:linear-gradient(90deg,#4caf6a,var(--green));box-shadow:0 0 8px rgba(125,223,149,0.35);}
+    .boss-card .hp-fill{background:linear-gradient(90deg,var(--red-deep),var(--red));box-shadow:0 0 8px rgba(232,41,74,0.35);}
+    .vs-badge{
+      font-family:'Press Start 2P',monospace;font-size:1rem;color:var(--yellow);
+      text-shadow:0 0 16px rgba(255,209,102,0.7);
+      animation:vsP 1.5s ease-in-out infinite;
+    }
+    @keyframes vsP{0%,100%{transform:scale(1)}50%{transform:scale(1.12);text-shadow:0 0 26px rgba(255,209,102,1)}}
+
+    /* Question card */
+    .boss-qcard{
+      background:var(--card);border:1px solid var(--border);
+      border-radius:18px;padding:1.2rem;
+      display:flex;flex-direction:column;gap:0.9rem;
+    }
+    .q-badge{font-family:'Press Start 2P',monospace;font-size:0.38rem;color:var(--yellow);}
+    .q-text{font-size:0.95rem;font-weight:800;color:var(--cream);line-height:1.6;}
+    .q-ctx{
+      background:#110508;border-radius:10px;padding:0.7rem 0.9rem;
+      font-family:'Fira Code',monospace;font-size:0.8rem;color:var(--green);
+      border-left:3px solid var(--red);line-height:1.7;
+    }
+
+    /* Damage floaters */
+    .dmg-float{
+      position:fixed;font-family:'Press Start 2P',monospace;font-size:1rem;
+      pointer-events:none;z-index:999;
+      animation:dmgPop 1s ease-out forwards;
+    }
+    @keyframes dmgPop{
+      0%{transform:translateY(0) scale(0.5);opacity:1}
+      40%{transform:translateY(-25px) scale(1.2);opacity:1}
+      100%{transform:translateY(-60px) scale(0.8);opacity:0}
+    }
+
+    /* Next btn */
+    .btn-next{
+      font-family:'Press Start 2P',monospace;font-size:0.48rem;padding:0.8rem 2rem;
+      border-radius:12px;border:none;cursor:pointer;
+      background:linear-gradient(135deg,var(--red-deep),var(--red),var(--red-light));
+      color:white;align-self:flex-end;
+      box-shadow:0 6px 22px rgba(232,41,74,0.4);
+      transition:transform 0.15s,box-shadow 0.15s;letter-spacing:0.05em;
+    }
+    .btn-next:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(232,41,74,0.65);}
+
+    /* ── INTRO OVERLAY ── */
+    .intro-overlay{
+      position:fixed;inset:0;z-index:200;
+      background:rgba(0,0,0,0.88);
+      display:flex;align-items:center;justify-content:center;
+      backdrop-filter:blur(8px);
+    }
+    .intro-card{
+      background:var(--card);border:2px solid var(--red);border-radius:26px;
+      padding:2rem 2.5rem;text-align:center;max-width:420px;width:90%;
+      display:flex;flex-direction:column;align-items:center;gap:1rem;
+      box-shadow:0 0 70px rgba(232,41,74,0.28),0 20px 60px rgba(0,0,0,0.6);
+      animation:introPop 0.5s cubic-bezier(.22,1,.36,1) both;
+    }
+    @keyframes introPop{from{transform:scale(0.7) translateY(30px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+    .intro-title{font-family:'Press Start 2P',monospace;font-size:0.65rem;color:var(--red-light);letter-spacing:0.05em;}
+    .intro-sub  {font-family:'Press Start 2P',monospace;font-size:0.4rem;color:var(--yellow);}
+    .intro-rules{
+      background:rgba(232,41,74,0.08);border:1px solid var(--border);border-radius:12px;
+      padding:0.9rem 1rem;width:100%;text-align:left;
+      display:flex;flex-direction:column;gap:0.45rem;
+    }
+    .intro-rule{font-size:0.78rem;font-weight:700;color:var(--muted);}
+    .intro-rule span{color:var(--cream);}
+    .btn-fight{
+      font-family:'Press Start 2P',monospace;font-size:0.58rem;padding:0.9rem 2.2rem;
+      border-radius:13px;border:none;cursor:pointer;
+      background:linear-gradient(135deg,var(--red-deep),var(--red),var(--red-light));
+      color:white;letter-spacing:0.06em;
+      box-shadow:0 8px 26px rgba(232,41,74,0.5);
+      animation:fightPulse 2s ease-in-out infinite;
+      transition:transform 0.15s;
+    }
+    @keyframes fightPulse{0%,100%{box-shadow:0 8px 26px rgba(232,41,74,0.5)}50%{box-shadow:0 8px 40px rgba(232,41,74,0.8),0 0 60px rgba(232,41,74,0.25)}}
+    .btn-fight:hover{transform:translateY(-3px) scale(1.04);}
+
+    /* ── RESULT OVERLAY ── */
+    .result-overlay{
+      position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.85);
+      display:none;align-items:center;justify-content:center;backdrop-filter:blur(8px);
+    }
+    .result-overlay.show{display:flex;}
+    .result-card{
+      background:var(--card);border-radius:26px;padding:2rem 2.5rem;
+      text-align:center;max-width:420px;width:90%;
+      display:flex;flex-direction:column;align-items:center;gap:0.9rem;
+      animation:introPop 0.5s cubic-bezier(.22,1,.36,1) both;
+    }
+    .result-card.win {border:2px solid var(--yellow);box-shadow:0 0 50px rgba(255,209,102,0.2),0 20px 60px rgba(0,0,0,0.6);}
+    .result-card.fail{border:2px solid var(--red);   box-shadow:0 0 50px rgba(232,41,74,0.2), 0 20px 60px rgba(0,0,0,0.6);}
+    .result-em{font-size:4.5rem;}
+    .result-title{font-family:'Press Start 2P',monospace;font-size:0.72rem;letter-spacing:0.05em;}
+    .result-card.win  .result-title{color:var(--yellow);text-shadow:0 0 14px rgba(255,209,102,0.6);}
+    .result-card.fail .result-title{color:var(--red-light);}
+    .result-score{font-family:'Press Start 2P',monospace;font-size:1.8rem;}
+    .result-card.win  .result-score{color:var(--yellow);}
+    .result-card.fail .result-score{color:var(--red-light);}
+    .result-sub{font-size:0.82rem;font-weight:700;color:var(--muted);line-height:1.7;}
+    .result-btns{display:flex;gap:0.7rem;flex-wrap:wrap;justify-content:center;}
+    .btn-result{
+      font-family:'Press Start 2P',monospace;font-size:0.42rem;padding:0.7rem 1.3rem;
+      border-radius:10px;border:none;cursor:pointer;transition:transform 0.15s;
+    }
+    .btn-result:hover{transform:translateY(-2px);}
+    .btn-result.primary{background:linear-gradient(135deg,var(--red-deep),var(--red));color:white;box-shadow:0 4px 14px rgba(232,41,74,0.4);}
+    .btn-result.secondary{background:rgba(232,41,74,0.1);color:var(--pink);border:1px solid var(--border);}
+  </style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<!-- ── INTRO OVERLAY ── -->
+<div class="intro-overlay" id="introOverlay">
+  <div class="intro-card">
+
+    <!-- CSS Mushroom Boss in intro -->
+    <div class="css-mushroom" style="position:relative">
+      <div style="position:absolute;inset:0;pointer-events:none">
+        <div class="mush-spark" style="width:4px;height:4px;background:#ff2200;box-shadow:0 0 5px #ff2200;--t:2.0s;--d:0.0s;--x:-50px;--y:-70px;left:60px;top:50px"></div>
+        <div class="mush-spark" style="width:3px;height:3px;background:#ff5500;box-shadow:0 0 4px #ff5500;--t:1.7s;--d:0.5s;--x:45px;--y:-60px;left:60px;top:50px"></div>
+        <div class="mush-spark" style="width:5px;height:5px;background:#aa0000;box-shadow:0 0 7px #aa0000;--t:2.5s;--d:1.0s;--x:-35px;--y:-80px;left:60px;top:50px"></div>
+        <div class="mush-spark" style="width:3px;height:3px;background:#ff3300;box-shadow:0 0 4px #ff3300;--t:1.5s;--d:1.4s;--x:55px;--y:-55px;left:60px;top:50px"></div>
+      </div>
+      <div class="mush-cap">
+        <div class="mush-spot s1"></div><div class="mush-spot s2"></div>
+        <div class="mush-spot s3"></div><div class="mush-spot s4"></div><div class="mush-spot s5"></div>
+        <div class="mush-cap-eyes"><div class="mush-cap-eye"></div><div class="mush-cap-eye"></div></div>
+      </div>
+      <div class="mush-brim"></div>
+      <div class="mush-arms">
+        <div class="mush-arm left"><div class="mush-claw"><div class="mush-finger"></div><div class="mush-finger"></div><div class="mush-finger"></div></div></div>
+        <div class="mush-arm right"><div class="mush-claw"><div class="mush-finger"></div><div class="mush-finger"></div><div class="mush-finger"></div></div></div>
+      </div>
+      <div class="mush-face">
+        <div class="mush-scar"></div>
+        <div class="mush-face-eyes"><div class="mush-eye left"></div><div class="mush-eye right"></div></div>
+        <div class="mush-mouth"></div>
+        <div class="mush-drool"></div>
+      </div>
+      <div class="mush-stem"></div>
+      <div class="mush-feet"><div class="mush-foot"></div><div class="mush-foot"></div></div>
+    </div>
+
+    <div class="intro-title">⚔️ BEGINNER BOSS!</div>
+    <div class="intro-sub">🍄 MUSHROOM KING</div>
+    <div class="intro-rules">
+      <div class="intro-rule">📝 Questions: <span>15 mixed Python questions</span></div>
+      <div class="intro-rule">🎯 Pass rate: <span>80% (12 / 15 correct)</span></div>
+      <div class="intro-rule">💥 Correct: <span>you deal -5 HP to the boss</span></div>
+      <div class="intro-rule">💔 Wrong: <span>boss deals -5 HP to you</span></div>
+      <div class="intro-rule">🏆 Win: <span>unlock Intermediate Stage!</span></div>
+    </div>
+    <button class="btn-fight" onclick="startBattle()">⚔️ FIGHT!</button>
+  </div>
+</div>
+
+<!-- ── WIN OVERLAY ── -->
+<div class="result-overlay" id="winOverlay">
+  <div class="result-card win">
+    <div class="result-em">🏆</div>
+    <div class="result-title">🎉 BOSS DEFEATED!</div>
+    <div class="result-score" id="winScore">0 / 15</div>
+    <div class="result-sub">You crushed the Mushroom King!<br>⚡ Intermediate Stage is now UNLOCKED!</div>
+    <div style="font-size:2.5rem">🌱</div>
+    <div class="result-btns">
+      <button class="btn-result primary" onclick="goToDashboard()">🗺️ Back to Map</button>
+      <button class="btn-result secondary" onclick="retryBoss()">🔁 Play Again</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── FAIL OVERLAY ── -->
+<div class="result-overlay" id="failOverlay">
+  <div class="result-card fail">
+    <div class="result-em">💀</div>
+    <div class="result-title">YOU LOST...</div>
+    <div class="result-score" id="failScore">0 / 15</div>
+    <div class="result-sub">The Mushroom King was too strong.<br>Review your mistakes and try again! 🎮</div>
+    <div class="result-btns">
+      <button class="btn-result primary"   onclick="retryBoss()">🔁 RETRY</button>
+      <button class="btn-result secondary" onclick="goToDashboard()">🗺️ Back to Map</button>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="dashboard.html" class="logo">🎮 <span>Pygame</span></a>
+  <div class="nav-center">
+    <span style="font-family:'Press Start 2P',monospace;font-size:0.45rem;color:var(--yellow);">⚔️ BOSS FIGHT</span>
+  </div>
+  <div class="nav-right">
+    <div class="nav-badge">🌱 Beginner Stage</div>
+  </div>
+</nav>
+
+<!-- BOSS PAGE -->
+<div class="boss-page">
+
+  <!-- Question tracker dots -->
+  <div class="q-counter">
+    <span class="q-counter-label">PROGRESS</span>
+    <div class="q-track" id="qTrack"></div>
+    <span class="q-counter-num" id="qNum">Q 1 / 15</span>
+  </div>
+
+  <!-- Battle arena -->
+  <div class="battle-arena">
+
+    <!-- Player side -->
+    <div class="fighter player">
+      <div class="fighter-top">
+        <div style="font-size:2.2rem;animation:bossHaunt 3s ease-in-out infinite">🎮</div>
+        <div>
+          <div class="fighter-name">YOU</div>
+          <div class="fighter-sub" id="playerName">Coder</div>
+        </div>
+      </div>
+      <div class="hp-wrap">
+        <div class="hp-label"><span class="hp-tag">❤️ HP</span><span class="hp-num" id="phpNum">100 / 100</span></div>
+        <div class="hp-bar"><div class="hp-fill player" id="phpFill" style="width:100%"></div></div>
+      </div>
+    </div>
+
+    <div class="vs-badge">VS</div>
+
+    <!-- Boss side — CSS mushroom (smaller) -->
+    <div class="fighter boss-card">
+      <div class="fighter-top" style="justify-content:flex-end">
+        <div>
+          <div class="fighter-name" style="text-align:right">BOSS</div>
+          <div class="fighter-sub" style="text-align:right">Mushroom King</div>
+        </div>
+        <!-- Mini mushroom in fighter card -->
+        <div class="css-mushroom" style="transform:scale(0.55);transform-origin:top right;margin-right:-16px;margin-top:-8px">
+          <div class="mush-cap">
+            <div class="mush-spot s1"></div><div class="mush-spot s2"></div><div class="mush-spot s3"></div>
+            <div class="mush-cap-eyes"><div class="mush-cap-eye"></div><div class="mush-cap-eye"></div></div>
+          </div>
+          <div class="mush-brim"></div>
+          <div class="mush-arms">
+            <div class="mush-arm left"><div class="mush-claw"><div class="mush-finger"></div><div class="mush-finger"></div><div class="mush-finger"></div></div></div>
+            <div class="mush-arm right"><div class="mush-claw"><div class="mush-finger"></div><div class="mush-finger"></div><div class="mush-finger"></div></div></div>
+          </div>
+          <div class="mush-face">
+            <div class="mush-face-eyes"><div class="mush-eye left"></div><div class="mush-eye right"></div></div>
+            <div class="mush-mouth"></div>
+          </div>
+          <div class="mush-stem"></div>
+          <div class="mush-feet"><div class="mush-foot"></div><div class="mush-foot"></div></div>
+        </div>
+      </div>
+      <div class="hp-wrap">
+        <div class="hp-label"><span class="hp-tag">💀 HP</span><span class="hp-num" id="bhpNum">100 / 100</span></div>
+        <div class="hp-bar"><div class="hp-fill boss-card" id="bhpFill" style="width:100%"></div></div>
+      </div>
+    </div>
+
+  </div><!-- end battle arena -->
+
+  <!-- Question card -->
+  <div class="boss-qcard">
+    <span class="q-badge">⚔️ QUESTION <span id="qBadgeNum">1</span> OF 15</span>
+    <p class="q-text" id="qText">Loading...</p>
+    <pre class="q-ctx" id="qCtx" style="display:none"></pre>
+    <div id="boss-editor-mount"></div>
+    <div class="fb-panel" id="boss-fb" style="display:none"></div>
+    <button class="btn-next" id="bossNextBtn" style="display:none" onclick="nextBossQ()">NEXT ▶</button>
+    <button class="btn-next" id="boss-retry" style="display:none;background:rgba(232,41,74,0.15);color:#ff8fa3;box-shadow:none;" onclick="retryBossQuestion()">🔁 TRY AGAIN</button>
+  </div>
+
+</div>
+
+<script src="js/questions.js"></script>
+<script>
+// ================================================================
+// boss.html — Beginner Boss Fight, 15 questions, CSS Mushroom King
+// ================================================================
+
+const STAGES = [
+  { name:'🌱 Beginner Stage',     short:'Beginner',     bank:'beginner',     totalLessons:7 },
+  { name:'⚡ Intermediate Stage', short:'Intermediate', bank:'intermediate', totalLessons:7 },
+  { name:'👑 Master Stage',       short:'Master',       bank:'master',       totalLessons:7 }
+];
+
+// ── Storage ───────────────────────────────────────────────────────
+function getSess()    { const r = localStorage.getItem('pyb_sess'); return r ? JSON.parse(r) : null; }
+function saveSess(u)  { localStorage.setItem('pyb_sess', JSON.stringify(u)); }
+function getUsers()   { return JSON.parse(localStorage.getItem('pyb_users') || '[]'); }
+function saveUsers(u) { localStorage.setItem('pyb_users', JSON.stringify(u)); }
+
+let D = {
+  currentStage:0, currentLesson:1, xp:0, streak:1,
+  lessonsCompleted:0, bossesBeaten:0, bestBossScore:null, bossRetries:0,
+  badges:[], stagesCleared:[], lessonProgress:[0,0,0], bossUnlocked:[false,false,false]
+};
+
+var PB_URL = 'http://127.0.0.1:8090';
+
+function saveDash() {
+  var s = getSess(); if (!s) return;
+
+  // Save to localStorage
+  s.gd = Object.assign({}, s.gd || {}, D);
+  localStorage.setItem('pyb_sess', JSON.stringify(s));
+
+  // Save to PocketBase
+  fetch(PB_URL + '/api/collections/users/records/' + s.id, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + (s.token || '')
+    },
+    body: JSON.stringify({ gamedata: D })
+  }).catch(function(err) {
+    console.warn('PocketBase save failed:', err);
+  });
+}
+
+// ── Stars ─────────────────────────────────────────────────────────
+(function(){
+  const el = document.getElementById('stars'); if(!el) return;
+  for(let i=0;i<80;i++){
+    const s=document.createElement('div'); s.className='star';
+    const z=Math.random()*2+0.5;
+    s.style.cssText=`width:${z}px;height:${z}px;top:${Math.random()*100}%;left:${Math.random()*100}%`;
+    s.style.setProperty('--dur',(Math.random()*3+2)+'s');
+    s.style.animationDelay=Math.random()*5+'s';
+    el.appendChild(s);
+  }
+})();
+
+// ── Boss state ────────────────────────────────────────────────────
+let BS = {
+  stageIdx:  0,
+  questions: [],
+  qi:        0,
+  php:       100,
+  bhp:       100,
+  score:     0,
+  answered:  false,
+  wrongQs:   []
+};
+
+var BADGE_DEFS = [
+  { id:0, icon:'🌱', name:'Seedling Coder',   desc:'You planted your first seed of Python knowledge!' },
+  { id:1, icon:'🍓', name:'Berry in Progress', desc:'Halfway through! Youre ripening nicely!' },
+  { id:2, icon:'👑', name:'Boss Berry',        desc:'You crushed the Mushroom King like a ripe strawberry!' },
+  { id:3, icon:'💀', name:'Brave Berry',       desc:'You faced the boss and lived to code another day!' }
+];
+
+var TOTAL_Q   = 15;
+var PASS_NEED = 12; // 80% of 15
+var HP_DMG    = Math.floor(100 / TOTAL_Q); // ~6 HP per question
+
+// ── Build question track dots ─────────────────────────────────────
+function buildTrack() {
+  const t = document.getElementById('qTrack'); t.innerHTML = '';
+  for (let i = 0; i < TOTAL_Q; i++) {
+    const d = document.createElement('div');
+    d.className = 'q-dot' + (i === 0 ? ' curr' : '');
+    d.id = 'dot' + i;
+    t.appendChild(d);
+  }
+}
+
+// ── Start battle ──────────────────────────────────────────────────
+function startBattle() {
+  document.getElementById('introOverlay').style.display = 'none';
+
+  BS.questions = getBossQuestions(STAGES[BS.stageIdx].bank); // 15 random from pool
+  BS.qi        = 0;
+  BS.php       = 100; BS.bhp = 100;
+  BS.score     = 0; BS.answered = false; BS.wrongQs = [];
+
+  buildTrack();
+  renderBossQ();
+}
+
+// ── Render question ───────────────────────────────────────────────
+function renderBossQ() {
+  BS.answered = false;
+  const q = BS.questions[BS.qi];
+  if (!q) { endBoss(); return; }
+
+  document.getElementById('qBadgeNum').textContent = BS.qi + 1;
+  document.getElementById('qNum').textContent      = 'Q ' + (BS.qi + 1) + ' / ' + TOTAL_Q;
+  document.getElementById('qText').textContent     = q.q;
+
+  const ctx = document.getElementById('qCtx');
+  if (q.ctx) { ctx.textContent = q.ctx; ctx.style.display = 'block'; }
+  else        { ctx.style.display = 'none'; }
+
+  makeEditor('boss-editor-mount', q.placeholder || '# type your Python code here', 'submitBossA()');
+
+  const fb = document.getElementById('boss-fb');
+  fb.style.display = 'none'; fb.className = 'fb-panel'; fb.innerHTML = '';
+  document.getElementById('bossNextBtn').style.display = 'none';
+}
+
+// ── Submit answer ─────────────────────────────────────────────────
+function submitBossA() {
+  if (BS.answered) return;
+  const val = getEditorValue('boss-editor-mount');
+  if (!val.trim()) {
+    setEditorState('boss-editor-mount', 'wrong');
+    setTimeout(() => setEditorState('boss-editor-mount', ''), 600);
+    return;
+  }
+
+  BS.answered = true;
+  const q       = BS.questions[BS.qi];
+  const correct = checkAnswer(val, q);
+
+  const fb = document.getElementById('boss-fb');
+  fb.style.display = 'flex';
+
+  if (correct) {
+    BS.score++;
+    BS.bhp = Math.max(0, BS.bhp - HP_DMG);
+    setEditorState('boss-editor-mount', 'correct');
+    fb.className = 'fb-panel ok';
+    fb.innerHTML = '<div class="fb-top">✅ CORRECT! You deal ' + HP_DMG + ' damage!</div><div class="fb-body">' + (q.explanation || 'Great answer!') + '</div>';
+    spawnDmg('-' + HP_DMG + ' HP', '#7ddf95', true);
+    updateBossHP();
+    document.getElementById('dot' + BS.qi).className = 'q-dot done';
+  } else {
+    BS.php = Math.max(0, BS.php - HP_DMG);
+    BS.wrongQs.push({ q, yourA: val });
+    setEditorState('boss-editor-mount', 'wrong');
+    fb.className = 'fb-panel no';
+    fb.innerHTML = '<div class="fb-top">❌ WRONG! Boss attacks you for ' + HP_DMG + ' HP!</div><div class="fb-body">' + (q.explanation || 'Check your answer.') + '</div><div style="margin-top:0.4rem;font-size:0.75rem;color:#c9919a;font-weight:700;">✅ Correct answer:</div><pre class="fb-correct-code">' + escHtml(q.answer) + '</pre>';
+    spawnDmg('-' + HP_DMG + ' HP', '#ff6b7a', false);
+    updatePlayerHP();
+    document.getElementById('dot' + BS.qi).className = 'q-dot wrong';
+  }
+
+  setEditorDisabled('boss-editor-mount', true);
+
+  var nx = document.getElementById('bossNextBtn');
+  nx.style.display = 'block';
+  nx.textContent   = (BS.qi === BS.questions.length - 1) ? 'SEE RESULTS ✓' : 'NEXT ▶';
+
+  var retryBtn = document.getElementById('boss-retry');
+  if (retryBtn) retryBtn.style.display = correct ? 'none' : 'block';
+}
+
+// ── Retry question ───────────────────────────────────────────────
+function retryBossQuestion() {
+  BS.answered = false;
+  var ta = document.getElementById('boss-editor-mount-ta');
+  if (ta) ta.value = '';
+  setEditorState('boss-editor-mount', '');
+  setEditorDisabled('boss-editor-mount', false);
+  var fb = document.getElementById('boss-fb');
+  fb.style.display = 'none';
+  document.getElementById('bossNextBtn').style.display  = 'none';
+  document.getElementById('boss-retry').style.display   = 'none';
+  // Restore dot to curr
+  document.getElementById('dot' + BS.qi).className = 'q-dot curr';
+}
+
+// ── Next question ─────────────────────────────────────────────────
+function nextBossQ() {
+  // Update dot from curr to done/wrong (already set in submit)
+  const prev = document.getElementById('dot' + BS.qi);
+  if (prev) prev.classList.remove('curr');
+
+  BS.qi++;
+  if (BS.qi < BS.questions.length) {
+    const cur = document.getElementById('dot' + BS.qi);
+    if (cur) cur.classList.add('curr');
+    renderBossQ();
+  } else {
+    endBoss();
+  }
+}
+
+// ── End boss ──────────────────────────────────────────────────────
+function endBoss() {
+  var passed = BS.score >= PASS_NEED;
+  var pct    = Math.round((BS.score / TOTAL_Q) * 100);
+
+  D.bossRetries++;
+
+  if (passed) {
+    D.bossesBeaten++;
+    D.bestBossScore = D.bestBossScore === null ? pct : Math.max(D.bestBossScore, pct);
+    if (D.stagesCleared.indexOf(BS.stageIdx) === -1) D.stagesCleared.push(BS.stageIdx);
+    // Award badge 2 — boss win
+    if (D.badges.indexOf(2) === -1) {
+      D.badges.push(2);
+      sessionStorage.setItem('newBadge', 2);
+    }
+    // Unlock next stage
+    if (BS.stageIdx + 1 < STAGES.length) {
+      D.currentStage  = BS.stageIdx + 1;
+      D.currentLesson = 1;
+    }
+    saveDash();
+    document.getElementById('winScore').textContent = BS.score + ' / ' + TOTAL_Q;
+    document.getElementById('winOverlay').classList.add('show');
+  } else {
+    // Award badge 3 — brave berry (failed boss)
+    if (D.badges.indexOf(3) === -1) {
+      D.badges.push(3);
+      sessionStorage.setItem('newBadge', 3);
+    }
+    saveDash();
+    document.getElementById('failScore').textContent = BS.score + ' / ' + TOTAL_Q;
+    document.getElementById('failOverlay').classList.add('show');
+  }
+}
+
+// ── Retry boss ────────────────────────────────────────────────────
+function retryBoss() {
+  document.getElementById('failOverlay').classList.remove('show');
+  startBattle();
+}
+
+// ── Go to dashboard ───────────────────────────────────────────────
+function goToDashboard() {
+  sessionStorage.setItem('fromLesson', 'true');
+  window.location.href = 'dashboard.html';
+}
+
+// ── HP updates ────────────────────────────────────────────────────
+function updatePlayerHP() {
+  document.getElementById('phpNum').textContent  = BS.php + ' / 100';
+  document.getElementById('phpFill').style.width = BS.php + '%';
+  var col = BS.php > 50 ? 'linear-gradient(90deg,#4caf6a,var(--green))' : BS.php > 25 ? 'linear-gradient(90deg,#ffd166,#ffaa00)' : 'linear-gradient(90deg,var(--red-deep),var(--red))';
+  document.getElementById('phpFill').style.background = col;
+}
+function updateBossHP() {
+  document.getElementById('bhpNum').textContent  = BS.bhp + ' / 100';
+  document.getElementById('bhpFill').style.width = BS.bhp + '%';
+}
+
+// ── Damage floaters ───────────────────────────────────────────────
+function spawnDmg(txt, color, onBoss) {
+  const d = document.createElement('div');
+  d.className   = 'dmg-float';
+  d.textContent = txt;
+  d.style.color = color;
+  d.style.left  = onBoss ? '62%' : '16%';
+  d.style.top   = '42%';
+  document.body.appendChild(d);
+  setTimeout(() => d.remove(), 1000);
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── Init ──────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', function() {
+  const s = getSess();
+  if (!s) { window.location.href = 'login.html'; return; }
+  if (s.gd) D = Object.assign({}, D, s.gd);
+  document.getElementById('playerName').textContent = s.username || 'Coder';
+  BS.stageIdx = parseInt(sessionStorage.getItem('bossStage')) || 0;
+  // Intro overlay shows automatically on load
+});
+</script>
+
+</body>
+</html>
