@@ -1,0 +1,145 @@
+/* ============================================================
+   review.css
+   PyBerry Gaming — Review Page Styles
+   ============================================================ */
+
+/* ── Page layout ────────────────────────────────────────────── */
+.review-page {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem;
+    gap: 1rem;
+    overflow-y: auto;
+  }
+  
+  /* ── Header ──────────────────────────────────────────────────── */
+  .review-header {
+    text-align: center;
+    max-width: 680px;
+    width: 100%;
+  }
+  .review-header h2 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--cr);
+    margin-bottom: .4rem;
+  }
+  .review-header p {
+    font-size: .88rem;
+    color: var(--mt);
+    font-weight: 600;
+  }
+  
+  /* ── Review list ─────────────────────────────────────────────── */
+  .review-list {
+    width: 100%;
+    max-width: 680px;
+    display: flex;
+    flex-direction: column;
+    gap: .9rem;
+  }
+  
+  /* ── Each review item card ───────────────────────────────────── */
+  .review-item {
+    background: var(--card);
+    border: 1px solid rgba(232,41,74,.35);
+    border-radius: 14px;
+    padding: 1.1rem 1.3rem;
+    animation: reviewIn .4s ease both;
+  }
+  @keyframes reviewIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0);    }
+  }
+  
+  .ri-top {
+    display: flex;
+    align-items: flex-start;
+    gap: .6rem;
+    margin-bottom: .7rem;
+  }
+  .ri-icon  { font-size: 1.2rem; flex-shrink: 0; margin-top: .1rem; }
+  .ri-qtxt  { font-size: .88rem; font-weight: 800; color: var(--cr); line-height: 1.5; flex: 1; }
+  
+  /* Context code shown inside review card */
+  .ri-ctx-code {
+    font-size: .78rem;
+    font-family: 'Fira Code', monospace;
+    color: var(--ps);
+    background: #0d0407;
+    border-radius: 7px;
+    padding: .5rem .7rem;
+    margin: .4rem 0;
+    overflow-x: auto;
+    white-space: pre;
+  }
+  
+  /* Section label */
+  .ri-section { margin-top: .5rem; }
+  .ri-section-lbl {
+    font-size: .68rem;
+    font-weight: 800;
+    color: var(--mt);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin-bottom: .3rem;
+  }
+  
+  /* User's wrong code */
+  .ri-your-code {
+    background: #1a0508;
+    border: 1.5px solid rgba(232,41,74,.3);
+    border-radius: 8px;
+    padding: .5rem .8rem;
+    font-family: 'Fira Code', monospace;
+    font-size: .82rem;
+    color: var(--rl);
+    white-space: pre-wrap;
+    line-height: 1.5;
+  }
+  
+  /* Correct code */
+  .ri-correct-code {
+    background: #071a0d;
+    border: 1.5px solid rgba(125,223,149,.3);
+    border-radius: 8px;
+    padding: .5rem .8rem;
+    font-family: 'Fira Code', monospace;
+    font-size: .82rem;
+    color: var(--gl);
+    white-space: pre-wrap;
+    line-height: 1.5;
+  }
+  
+  /* Error reasons list */
+  .ri-reasons {
+    display: flex;
+    flex-direction: column;
+    gap: .3rem;
+    margin-top: .5rem;
+  }
+  .ri-reason {
+    font-size: .8rem;
+    font-weight: 700;
+    color: var(--ps);
+    line-height: 1.5;
+    padding: .3rem .6rem;
+    background: rgba(232,41,74,.06);
+    border-radius: 6px;
+    border-left: 3px solid var(--red);
+  }
+  
+  /* Explanation block */
+  .ri-explain {
+    margin-top: .5rem;
+    font-size: .78rem;
+    font-weight: 700;
+    color: var(--mt);
+    line-height: 1.6;
+    padding: .4rem .6rem;
+    background: rgba(255,209,102,.05);
+    border-radius: 6px;
+    border-left: 3px solid var(--yw);
+  }
