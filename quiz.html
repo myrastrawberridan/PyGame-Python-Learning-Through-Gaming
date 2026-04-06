@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Skill Check 🍓 PyGame Gaming</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/quiz.css" />
+</head>
+<body>
+
+  <div class="stars" id="stars"></div>
+  <div id="pixels"></div>
+
+  <!-- NAV -->
+  <nav>
+    <a href="index.html" class="logo">🍓 <span>PyGame</span> Gaming</a>
+    <div class="nav-badge">🎮 v1.0 — BETA</div>
+  </nav>
+
+  <!-- ══════════════════════════════════
+       SCREEN 1 — INTRO
+  ══════════════════════════════════ -->
+  <div class="screen active" id="screen-intro">
+    <div class="intro-card">
+
+      <div class="char-bounce">🍓</div>
+
+      <div class="pixel-label">🌟 SKILL CHECK</div>
+      <h1>Before We Begin...</h1>
+      <p class="intro-text">
+        Hey there, future Python wizard! 🧙‍♀️<br><br>
+        I'm going to ask you <strong>15 questions</strong> to find out where 
+        you're starting from — no pressure, no judgment! 🍓<br><br>
+        Whether you're a total beginner or a sneaky expert,<br>
+        there's a perfect level waiting for you! ✨
+      </p>
+
+      <div class="info-chips">
+        <div class="chip">📝 15 Questions</div>
+        <div class="chip">⏱️ No Time Limit</div>
+        <div class="chip">🍓 Just Have Fun!</div>
+      </div>
+
+      <button class="btn btn-primary" id="startBtn">
+        🍓 LET'S GO!
+      </button>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       SCREEN 2 — QUIZ
+  ══════════════════════════════════ -->
+  <div class="screen" id="screen-quiz">
+    <div class="quiz-card">
+
+      <!-- Progress bar -->
+      <div class="progress-top">
+        <span class="q-counter" id="qCounter">Question 1 / 15</span>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="berry-trail" id="berryTrail">🍓</div>
+      </div>
+
+      <!-- Difficulty badge -->
+      <div class="diff-badge" id="diffBadge">🌱 Beginner</div>
+
+      <!-- Question -->
+      <div class="question-box">
+        <p class="question-text" id="questionText">Loading...</p>
+      </div>
+
+      <!-- Code snippet (shown only for some questions) -->
+      <pre class="code-block" id="codeBlock"></pre>
+
+      <!-- Options -->
+      <div class="options-grid" id="optionsGrid"></div>
+
+      <!-- Next button (hidden until answer chosen) -->
+      <button class="btn btn-next" id="nextBtn" style="display:none;">
+        NEXT ▶
+      </button>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       SCREEN 3 — RESULT
+  ══════════════════════════════════ -->
+  <div class="screen" id="screen-result">
+    <div class="result-card">
+
+      <div class="result-emoji" id="resultEmoji">🍓</div>
+      <div class="confetti-row" id="confettiRow"></div>
+
+      <div class="pixel-label" id="resultLabel">🏆 RESULT</div>
+      <h1 class="result-title" id="resultTitle">Congratulations!</h1>
+      <p class="result-level" id="resultLevel"></p>
+      <p class="result-msg"   id="resultMsg"></p>
+
+      <div class="score-bubble">
+        <span>You got</span>
+        <span class="score-num" id="scoreNum">0</span>
+        <span>out of 15! 🍓</span>
+      </div>
+
+      <div class="result-badges" id="resultBadges"></div>
+
+      <button class="btn btn-begin" id="beginBtn">
+        🍓 LET'S BEGIN!
+      </button>
+
+      <a href="index.html" class="retry-link" id="retryLink">↩ Retake the quiz</a>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    Made with 🍓 by <span>Nur Myra Qistina</span> · Python Learning Through Gaming · UPTM 2026
+  </footer>
+
+  <script src="js/quiz.js"></script>
+</body>
+</html>
