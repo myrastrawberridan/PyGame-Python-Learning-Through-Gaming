@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register 🍓 PyGame Gaming</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/register.css" />
+</head>
+<body>
+
+  <!-- Background seeds -->
+  <div class="stars" id="stars"></div>
+  <div id="pixels"></div>
+
+  <!-- Navigation -->
+  <nav>
+    <a href="index.html" class="logo">🍓 <span>PyGame</span> Gaming</a>
+    <div class="nav-badge">🎮 v1.0 — BETA</div>
+  </nav>
+
+  <!-- Register Card -->
+  <div class="page-wrap">
+
+    <div class="card">
+
+      <!-- Character + bubble -->
+      <div class="char-row">
+        <div class="char-frame">
+          <!--
+            Replace with your image:
+            <img src="assets/character.png" alt="Character" />
+          -->
+          <div class="char-emoji">🍓</div>
+        </div>
+        <div class="bubble">
+          <p>New here? Yay! 🎉<br>Join the <strong>berry</strong><br>fun! <span class="blink">▌</span></p>
+        </div>
+      </div>
+
+      <!-- Title -->
+      <div class="card-title">
+        <span class="pixel-label">✦ CREATE ACCOUNT</span>
+        <h1>Join the Quest!</h1>
+        <p class="subtitle">Start your Python adventure today 🍓</p>
+      </div>
+
+      <!-- Form -->
+      <div class="form">
+
+        <div class="form-two-col">
+
+          <div class="input-group">
+            <label for="firstname">👤 First Name</label>
+            <div class="input-wrap">
+              <input type="text" id="firstname" placeholder="Myra" />
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="lastname">👤 Last Name</label>
+            <div class="input-wrap">
+              <input type="text" id="lastname" placeholder="Qistina" />
+            </div>
+          </div>
+
+        </div>
+
+        <div class="input-group">
+          <label for="username">🎮 Username</label>
+          <div class="input-wrap">
+            <input type="text" id="username" placeholder="StrawberryCoder99" />
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="email">📧 Email</label>
+          <div class="input-wrap">
+            <input type="email" id="email" placeholder="yourname@email.com" />
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="password">🔒 Password</label>
+          <div class="input-wrap">
+            <input type="password" id="password" placeholder="••••••••" />
+            <button class="toggle-pw" id="togglePw" type="button">👁️</button>
+          </div>
+          <!-- Password strength bar -->
+          <div class="strength-bar">
+            <div class="strength-fill" id="strengthFill"></div>
+          </div>
+          <span class="strength-label" id="strengthLabel"></span>
+        </div>
+
+        <div class="input-group">
+          <label for="confirm">🔒 Confirm Password</label>
+          <div class="input-wrap">
+            <input type="password" id="confirm" placeholder="••••••••" />
+            <button class="toggle-pw" id="toggleConfirm" type="button">👁️</button>
+          </div>
+          <span class="match-label" id="matchLabel"></span>
+        </div>
+
+        <label class="terms">
+          <input type="checkbox" id="terms" />
+          <span>I agree to the <a href="#">Terms & Conditions</a> 🍓</span>
+        </label>
+
+        <button class="btn btn-primary" id="registerBtn" type="button">
+          ✦ CREATE ACCOUNT
+        </button>
+
+        <div class="divider"><span>or</span></div>
+
+        <p class="switch-text">
+          Already have an account?
+          <a href="login.html">▶ Login here!</a>
+        </p>
+
+      </div>
+    </div>
+
+    <!-- Decorative strawberries -->
+    <div class="deco deco-left">🍓</div>
+    <div class="deco deco-right">🍓</div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    Made with 🍓 by <span>Nur Myra Qistina</span> · Python Learning Through Gaming · UPTM 2026
+  </footer>
+
+  <script src="js/register.js"></script>
+</body>
+</html>
