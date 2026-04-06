@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Python Learning Through Gaming 🍓</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .pixel-deco {
+      position: fixed; pointer-events: none; z-index: 0;
+      animation: floatUp var(--d, 10s) linear infinite;
+      opacity: 0;
+    }
+    @keyframes floatUp {
+      0%   { transform: translateY(100vh) rotate(0deg);   opacity: 0; }
+      10%  { opacity: 0.45; }
+      90%  { opacity: 0.45; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="stars" id="stars"></div>
+  <div id="pixels"></div>
+
+  <nav>
+    <div class="logo">🍓 <span>PyGame</span><br></div>
+    <div class="nav-badge">🎮 v1.0 — BETA</div>
+  </nav>
+
+  <main class="main">
+
+    <div class="character-side">
+      <div class="character-frame">
+        <div class="character-placeholder">🍓</div>
+      </div>
+      <div class="speech-bubble">
+        <p>
+          Hey there, coder! 👋<br><br>
+          I'm <strong>Berry</strong>, your guide!<br>
+          Sweet learning starts here! 🍓✨<br><br>
+          Python is more fun than<br>
+          you think — trust me!<br><br>
+          <span class="blink">▌</span> Let's gooo!
+        </p>
+      </div>
+    </div>
+
+    <div class="hero">
+      <div class="pixel-title">
+        🍓 WELCOME,
+        <span class="line2">FUTURE PROGRAMMERS! 🚀</span>
+      </div>
+      <h1 class="main-title">
+        Learn Python.<br>
+        <span class="grad">Play. Level Up. Win.</span>
+      </h1>
+      <p class="tagline">
+        Who said coding is boring? 🎮 Turn your Python journey into a 
+        sweet adventure — earn badges, beat challenges, and become the 
+        programmer you were always meant to be!
+      </p>
+      <div class="stats">
+        <div class="stat-chip"><div class="dot green"></div>3 Levels</div>
+        <div class="stat-chip"><div class="dot yellow"></div>Badges & Rewards</div>
+        <div class="stat-chip"><div class="dot pink"></div>Instant Feedback</div>
+      </div>
+      <div class="levels-row">
+        <div class="level-badge beginner">🌱 Beginner</div>
+        <div class="level-badge inter">⚡ Intermediate</div>
+        <div class="level-badge advanced">🔥 Advanced</div>
+      </div>
+      <div class="cta-group">
+        <a href="login.html" class="btn btn-primary">▶ LOGIN</a>
+        <a href="register.html" class="btn btn-outline">✦ REGISTER</a>
+      </div>
+    </div>
+
+    <div class="feature-side">
+      <div class="feature-card">
+        <div class="feat-icon">🗺️</div>
+        <div class="feat-text"><h4>Adventure Map</h4><p>Progress through stages like a real game world!</p></div>
+      </div>
+      <div class="feature-card">
+        <div class="feat-icon">🏆</div>
+        <div class="feat-text"><h4>Earn Badges</h4><p>Complete challenges and collect awesome rewards.</p></div>
+      </div>
+      <div class="feature-card">
+        <div class="feat-icon">💡</div>
+        <div class="feat-text"><h4>Smart Hints</h4><p>Stuck? Get detailed error explanations instantly.</p></div>
+      </div>
+      <div class="feature-card">
+        <div class="feat-icon">📊</div>
+        <div class="feat-text"><h4>Track Progress</h4><p>See how far you've come with a clear skill tracker.</p></div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    Made with 🍓 by <span>Nur Myra Qistina</span> · Python Learning Through Gaming · UPTM 2026
+  </footer>
+
+  <script>
+    // ── Stars ─────────────────────────────────
+    (function() {
+      var el = document.getElementById('stars'); if (!el) return;
+      for (var i = 0; i < 80; i++) {
+        var s = document.createElement('div'); s.className = 'star';
+        var z = Math.random() * 2.5 + 0.5;
+        s.style.width  = z + 'px'; s.style.height = z + 'px';
+        s.style.top    = Math.random() * 100 + '%';
+        s.style.left   = Math.random() * 100 + '%';
+        s.style.setProperty('--dur', (Math.random() * 3 + 2) + 's');
+        s.style.animationDelay = Math.random() * 5 + 's';
+        el.appendChild(s);
+      }
+    })();
+
+    // ── Falling emojis ────────────────────────
+    (function() {
+      var emojis = ['🍓','🍓','✨','🎮','🍓','⚡','🌟','🍓'];
+      var el = document.getElementById('pixels'); if (!el) return;
+      emojis.forEach(function(emoji, i) {
+        var p = document.createElement('div');
+        p.className   = 'pixel-deco';
+        p.textContent = emoji;
+        p.style.left  = Math.random() * 100 + '%';
+        p.style.fontSize = (Math.random() * 0.8 + 0.9) + 'rem';
+        p.style.setProperty('--d', (Math.random() * 10 + 8) + 's');
+        p.style.animationDelay = (i * 1.5) + 's';
+        el.appendChild(p);
+      });
+    })();
+  </script>
+
+</body>
+</html>
