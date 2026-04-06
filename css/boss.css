@@ -1,0 +1,273 @@
+/* ============================================================
+   boss.css
+   PyBerry Gaming — Boss Fight Page Styles
+   ============================================================ */
+
+/* ── Page layout ────────────────────────────────────────────── */
+.boss-page {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .boss-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 50% 30%, rgba(232,41,74,.18) 0%, transparent 65%),
+      radial-gradient(ellipse at 20% 80%, rgba(255,209,102,.08) 0%, transparent 50%),
+      var(--bg);
+    z-index: 0;
+  }
+  
+  .boss-wrap {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    gap: .8rem;
+    height: 100%;
+    overflow-y: auto;
+  }
+  
+  /* ── Title bar ───────────────────────────────────────────────── */
+  .boss-title-bar  { text-align: center; }
+  .boss-stage-name {
+    font-family: 'Press Start 2P', monospace;
+    font-size: .52rem;
+    color: var(--yw);
+    letter-spacing: .12em;
+    text-shadow: 0 0 12px rgba(255,209,102,.6);
+    margin-bottom: .3rem;
+  }
+  .boss-qnum {
+    font-family: 'Press Start 2P', monospace;
+    font-size: .42rem;
+    color: var(--mt);
+  }
+  
+  /* ── Battle area (fighters + HP bars) ───────────────────────── */
+  .battle-area {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 680px;
+    gap: 1rem;
+  }
+  
+  .fighter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .5rem;
+    flex: 0 0 auto;
+  }
+  
+  .fighter-label {
+    font-size: .7rem;
+    font-weight: 800;
+    color: var(--mt);
+    font-family: 'Press Start 2P', monospace;
+    margin-bottom: .2rem;
+  }
+  
+  .fighter-emoji {
+    font-size: 4rem;
+    animation: floatBob 2s ease-in-out infinite;
+    filter: drop-shadow(0 0 12px rgba(232,41,74,.4));
+  }
+  .fighter-emoji.boss-em {
+    filter: drop-shadow(0 0 16px rgba(255,209,102,.5));
+  }
+  
+  .hp-bar-wrap { width: 130px; }
+  .hp-label    { display: flex; justify-content: space-between; font-size: .68rem; font-weight: 800; margin-bottom: .3rem; }
+  .hp-lbl-green  { color: var(--gl); font-size: .68rem; font-weight: 800; }
+  .hp-lbl-yellow { color: var(--yw); font-size: .68rem; font-weight: 800; }
+  
+  .hp-bar {
+    height: 14px;
+    border-radius: 999px;
+    overflow: hidden;
+    border: 1.5px solid rgba(255,255,255,.1);
+  }
+  .hp-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width .5s cubic-bezier(.22,1,.36,1), background .5s;
+  }
+  .hp-fill.player { background: linear-gradient(90deg, var(--gn), var(--gl)); }
+  .hp-fill.boss   { background: linear-gradient(90deg, #b8860b, var(--yw)); }
+  
+  .vs-col  { display: flex; flex-direction: column; align-items: center; gap: .4rem; }
+  .vs-badge {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 1.1rem;
+    color: var(--red);
+    text-shadow: 0 0 16px rgba(232,41,74,.8);
+    animation: nPulse 1s ease-in-out infinite;
+  }
+  
+  /* ── Question card ───────────────────────────────────────────── */
+  .boss-qcard {
+    background: rgba(46,16,24,.95);
+    border: 2px solid rgba(232,41,74,.3);
+    border-radius: 18px;
+    padding: 1.2rem 1.5rem;
+    width: 100%;
+    max-width: 680px;
+    backdrop-filter: blur(8px);
+  }
+  
+  .boss-qtxt {
+    font-size: .93rem;
+    font-weight: 800;
+    color: var(--cr);
+    line-height: 1.65;
+    margin-bottom: .6rem;
+  }
+  
+  /* Context code block */
+  .boss-context {
+    background: #0d0407;
+    border: 1.5px solid rgba(232,41,74,.2);
+    border-left: 3px solid var(--yw);
+    border-radius: 9px;
+    padding: .7rem .9rem;
+    font-family: 'Fira Code', monospace;
+    font-size: .8rem;
+    color: var(--yw);
+    white-space: pre;
+    overflow-x: auto;
+    line-height: 1.5;
+    display: none;
+    margin-bottom: .7rem;
+  }
+  .boss-context.vis { display: block; }
+  
+  /* Next button */
+  .boss-next {
+    font-family: 'Press Start 2P', monospace;
+    font-size: .5rem;
+    padding: .6rem 1.5rem;
+    border-radius: 9px;
+    border: none;
+    cursor: pointer;
+    background: linear-gradient(135deg, #b8860b, var(--yw));
+    color: #1a0a00;
+    box-shadow: 0 4px 14px rgba(255,209,102,.35);
+    margin-top: .8rem;
+    display: none;
+    float: right;
+    transition: transform .15s;
+  }
+  .boss-next:hover { transform: translateY(-2px); }
+  
+  /* Damage number float */
+  .boss-dmg {
+    position: absolute;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 1rem;
+    pointer-events: none;
+    animation: dmgPop 1s ease forwards;
+    z-index: 20;
+  }
+  @keyframes dmgPop {
+    0%   { transform: translateY(0) scale(.8);   opacity: 1; }
+    100% { transform: translateY(-55px) scale(1.2); opacity: 0; }
+  }
+  
+  /* ── Code editor (same component, shared via questions.js) ───── */
+  /* All .editor-* and .fb-* styles live in lesson.css             */
+  /* Include lesson.css OR copy those styles here if not sharing   */
+  
+  /* ── Boss intro overlay ──────────────────────────────────────── */
+  .boss-intro {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,.95);
+    flex-direction: column;
+    gap: 1.1rem;
+    animation: cIn .4s ease;
+  }
+  .boss-intro-em {
+    font-size: 7rem;
+    animation: bossIn .6s cubic-bezier(.22,1,.36,1) both, floatBob 2s 1s ease-in-out infinite;
+  }
+  .boss-intro-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(.7rem, 2vw, 1rem);
+    color: var(--yw);
+    text-shadow: 0 0 24px rgba(255,209,102,.7);
+    text-align: center;
+    line-height: 1.6;
+  }
+  .boss-intro-sub {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--mt);
+    text-align: center;
+    max-width: 420px;
+    line-height: 1.7;
+  }
+  .bir-list { display: flex; flex-direction: column; gap: .5rem; text-align: center; }
+  .bir {
+    font-size: .85rem;
+    font-weight: 800;
+    color: var(--ps);
+  }
+  .bir b { color: var(--yw); }
+  
+  /* ── Boss result overlay ─────────────────────────────────────── */
+  .boss-result {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,.92);
+    backdrop-filter: blur(6px);
+  }
+  .br-card {
+    background: var(--card);
+    border: 2px solid var(--yw);
+    border-radius: 24px;
+    padding: 2rem 2.4rem;
+    text-align: center;
+    max-width: 460px;
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .8rem;
+    animation: lvlPop .5s cubic-bezier(.22,1,.36,1) both;
+  }
+  .br-card.fail { border-color: var(--red); }
+  
+  .br-em    { font-size: 4rem; animation: bBounce 1.2s ease-in-out infinite alternate; }
+  .br-title { font-size: 1.6rem; font-weight: 800; color: var(--cr); }
+  .br-score {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 1.3rem;
+    color: var(--yw);
+  }
+  .br-score.fail { color: var(--rl); }
+  .br-msg { font-size: .88rem; font-weight: 700; color: var(--mt); line-height: 1.7; max-width: 360px; }
+  .br-badges { display: flex; gap: .5rem; flex-wrap: wrap; justify-content: center; }
+  .br-badge  { font-size: 1.5rem; animation: bPop .4s cubic-bezier(.22,1,.36,1) both; }
+  .br-btns   { display: flex; gap: .8rem; flex-wrap: wrap; justify-content: center; margin-top: .5rem; }
+  
+  /* ── Battle animations ───────────────────────────────────────── */
+  @keyframes floatBob  { 0%,100%{transform:translateY(0);}       50%{transform:translateY(-14px);} }
+  @keyframes heroAtk   { 0%,100%{transform:translateX(0);}       50%{transform:translateX(28px) scale(1.1);} }
+  @keyframes bossAtk   { 0%,100%{transform:translateX(0);}       50%{transform:translateX(-28px) scale(1.1);} }
+  @keyframes dmgFlash  { 0%,100%{opacity:1;}                     50%{opacity:.15;filter:brightness(3) saturate(0);} }
+  @keyframes bossIn    { from{transform:scale(0) rotate(180deg);opacity:0;} to{transform:scale(1) rotate(0deg);opacity:1;} }
